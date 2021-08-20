@@ -7,6 +7,8 @@ import About from "./components/pages/about";
 import Contact from "./components/pages/contact";
 import Shop from "./components/shop/Shop";
 import Cart from "./components/Cart/Cart";
+import "./components/FontawesomeIcons";
+import ProductPage from "./components/pages/productPage/productPage.jsx";
 
 function App() {
   return (

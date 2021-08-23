@@ -1,19 +1,34 @@
-import React, { useState, useEffect, useParams } from "react";
+import React, { useState } from "react";
 import "./Card.css";
 import { BsHeart, BsFillHeartFill } from "react-icons/bs";
 import { MdAddShoppingCart } from "react-icons/md";
 import { IconContext } from "react-icons";
-import { connect } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct, addQuantity, updateTotal } from "../../redux/actions";
+import {
+  addProduct,
+  addQuantity,
+  updateTotal,
+  addFav,
+  subFav,
+} from "../../redux/actions";
+import { Link } from "react-router-dom";
+import ProductPage from "../productPage/productPage";
 
-export default function Card({ name, price, image, description, id, item }) {
+export default function Card({ item }) {
   const [liked, setLiked] = useState(true);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  let filterSize = document.getElementById("filter-size");
+  console.log("filter size element value", filterSize ? filterSize.value : "");
+  let cartStorage = window.localStorage;
 
   function handleClick() {
     setLiked(!liked);
+    if (liked === true) {
+      dispatch(addFav(item));
+    } else {
+      dispatch(subFav(item.id));
+    }
   }
 
   function isPresentInCart(id) {
@@ -31,11 +46,28 @@ export default function Card({ name, price, image, description, id, item }) {
       value={{ style: { fontSize: "22px", color: "#4C4C6D" } }}
     >
       <div className="card">
-        <img className="card-image" src={image} alt="Logo" />
+        <Link
+          to={{
+            pathname: "/products/" + item.id,
+            state: item,
+          }}
+        >
+          <img className="card-image" src={item.main_img} alt="Logo" />
+        </Link>
         <div className="card-bottom">
           <div className="card-header">
-            <h4 className="card-title">{name}</h4>
-            <p>Price ₹ : {price}</p>
+            <h4 className="card-title">
+              <Link
+                to={{
+                  pathname: "/products/" + item.id,
+                  state: item,
+                }}
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                {item.name}
+              </Link>
+            </h4>
+            <p>Price ₹ : {item.price}</p>
           </div>
           <button
             onClick={() => {
@@ -45,11 +77,13 @@ export default function Card({ name, price, image, description, id, item }) {
                     ...item,
                     quantity: 1,
                     currPrice: item.price,
+                    currSize: filterSize ? filterSize.value : item.size[0],
+                    shippingMethod: "Standard",
                   })
                 );
                 dispatch(updateTotal(item.price));
               }
-
+              cartStorage.setItem("cart", JSON.stringify(cart));
               console.log(cart);
             }}
             className="add-to-cart"
@@ -65,7 +99,12 @@ export default function Card({ name, price, image, description, id, item }) {
           {liked ? (
             <BsHeart onClick={handleClick} />
           ) : (
-            <BsFillHeartFill onClick={handleClick} />
+            <BsFillHeartFill
+              style={{
+                color: "#fbb03b",
+              }}
+              onClick={handleClick}
+            />
           )}
         </div>
       </div>

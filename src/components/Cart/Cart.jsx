@@ -4,11 +4,18 @@ import data from "../../data";
 import CartItem from "./CartItem";
 
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { updateLocalStorageCartData } from "../../redux/actions";
 
 function Cart() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  console.log("cart in Card.jsx",cart);
   const total = useSelector((state) => state.total);
+  const status = useSelector((state) => state.loginStatus);
+
+  
 
   return (
     <div className="cart">
@@ -25,7 +32,7 @@ function Cart() {
           </div>
           {/* <CartItem productImage={data[0].main_img} productName={data[0].name} size="XL" price="23" quantity="1" />
                     <CartItem productImage={data[0].main_img} productName={data[0].name} size="XL" price="23" quantity="1" /> */}
-          {cart.map((item, index) => (
+          {cart.map((item) => (
             <CartItem key={item.id} item={item} />
           ))}
         </div>
@@ -34,7 +41,9 @@ function Cart() {
             Total Amount: <span>{total}</span>
           </span>
           <span className="checkout-btn">
-            <button>Checkout</button>
+            <Link to={status ? "/order-now" : "/loginPage"}>
+              <button>Checkout</button>
+            </Link>
           </span>
         </div>
       </main>
